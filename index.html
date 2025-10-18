@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BK Distribution Orders - Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2D5A27">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="BK Orders">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, #2D5A27 0%, #4A7C59 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .status-pending { background-color: #FEF3C7; color: #92400E; }
+        .status-processing { background-color: #DBEAFE; color: #1E40AF; }
+        .status-completed { background-color: #D1FAE5; color: #065F46; }
+        .nav-bottom { bottom: 0; left: 0; right: 0; z-index: 50; }
+    </style>
+</head>
+<body class="bg-gray-50 pb-20">
+    <!-- Header -->
+    <header class="hero-bg text-white">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img src="resources/bk-distribution-logo.png" alt="BK Distribution" class="w-12 h-12 rounded-full bg-white p-1">
+                    <div>
+                        <h1 class="text-xl font-bold">BK Distribution</h1>
+                        <p class="text-sm opacity-90">Professional Order Management</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-medium username">Welcome</p>
+                    <p class="text-xs opacity-75" id="currentDate"></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-white">
+        <div class="container mx-auto px-4 py-8">
+            <div class="text-center mb-8">
+                <img src="resources/warehouse-hero.png" alt="BK Distribution Warehouse" class="w-full h-48 object-cover rounded-lg mb-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Trusted Distribution Partner</h2>
+                <p class="text-gray-600">Streamlined ordering for sugar and food products</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Stats -->
+    <section class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="bg-white rounded-lg p-4 card-shadow fade-in">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">Total Orders</p>
+                        <p class="text-2xl font-bold text-green-600" id="totalOrders">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 card-shadow fade-in">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600">This Month</p>
+                        <p class="text-2xl font-bold text-blue-600" id="monthlyOrders">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg p-4 card-shadow fade-in mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-600">Total Value</p>
+                    <p class="text-2xl font-bold text-purple-600" id="totalValue">$0</p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Chart -->
+    <section class="container mx-auto px-4 py-6">
+        <div class="bg-white rounded-lg p-4 card-shadow fade-in">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Order Trends</h3>
+            <div id="orderChart" style="height: 200px;"></div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="container mx-auto px-4 py-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-2 gap-4">
+            <button data-page="products" class="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg card-shadow transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <p class="text-sm font-medium">Browse Products</p>
+            </button>
+            
+            <button data-page="orders" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg card-shadow transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <p class="text-sm font-medium">Create Order</p>
+            </button>
+            
+            <button data-page="orders" class="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg card-shadow transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <p class="text-sm font-medium">View Orders</p>
+            </button>
+            
+            <button data-page="profile" class="bg-gray-600 hover:bg-gray-700 text-white p-4 rounded-lg card-shadow transition-colors">
+                <svg class="w-8 h-8 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <p class="text-sm font-medium">Profile</p>
+            </button>
+        </div>
+    </section>
+
+    <!-- Recent Orders -->
+    <section class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
+            <button data-page="orders" class="text-green-600 hover:text-green-700 text-sm font-medium">View All</button>
+        </div>
+        
+        <div id="recentOrders" class="space-y-3">
+            <!-- Orders will be populated by JavaScript -->
+        </div>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed nav-bottom bg-white border-t border-gray-200 px-4 py-2">
+        <div class="flex justify-around">
+            <button data-page="dashboard" class="flex flex-col items-center py-2 px-3 text-green-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                </svg>
+                <span class="text-xs mt-1">Home</span>
+            </button>
+            
+            <button data-page="products" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <span class="text-xs mt-1">Products</span>
+            </button>
+            
+            <button data-page="orders" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span class="text-xs mt-1">Orders</span>
+            </button>
+            
+            <button data-page="profile" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span class="text-xs mt-1">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="db.js"></script>
+    <script src="main.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString();
+            
+            // Initialize dashboard stats
+            if (app && app.currentUser) {
+                app.initDashboard();
+                loadRecentOrders();
+            }
+        });
+
+        function loadRecentOrders() {
+            const orders = db.getOrdersByUser(app.currentUser.username);
+            const recentOrders = orders.slice(0, 3); // Show only 3 recent orders
+            
+            const container = document.getElementById('recentOrders');
+            if (recentOrders.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No orders yet</p>';
+                return;
+            }
+            
+            container.innerHTML = recentOrders.map(order => `
+                <div class="bg-white rounded-lg p-4 card-shadow">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-medium text-gray-800">PO #${order.orderNumber}</h4>
+                        <span class="status-${order.status} px-2 py-1 rounded-full text-xs font-medium">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-2">${order.items.length} items • $${order.totals.total}</p>
+                    <p class="text-xs text-gray-500">${new Date(order.createdAt).toLocaleDateString()}</p>
+                    <div class="flex gap-2 mt-3">
+                        <button class="generate-pdf text-green-600 hover:text-green-700 text-sm font-medium" data-order-id="${order.id}">
+                            Download PDF
+                        </button>
+                        <button class="share-whatsapp text-blue-600 hover:text-blue-700 text-sm font-medium" data-order-id="${order.id}">
+                            Share
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

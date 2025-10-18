@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BK Distribution - Profile</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2D5A27">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, #2D5A27 0%, #4A7C59 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .nav-bottom { bottom: 0; left: 0; right: 0; z-index: 50; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 60;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 pb-20">
+    <!-- Header -->
+    <header class="hero-bg text-white sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-6">
+            <div class="text-center">
+                <img src="resources/bk-distribution-logo.png" alt="BK Distribution" class="w-16 h-16 mx-auto mb-3 rounded-full bg-white p-1">
+                <h1 class="text-xl font-bold">Profile</h1>
+                <p class="text-sm opacity-90 username">Manage your account</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Information -->
+    <section class="container mx-auto px-4 py-6">
+        <div class="bg-white rounded-lg card-shadow p-6 mb-6">
+            <div class="flex items-center space-x-4 mb-6">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-800" id="companyName">Company Name</h2>
+                    <p class="text-sm text-gray-600" id="userEmail">email@example.com</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <span class="text-gray-700">Account Status</span>
+                    </div>
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Active</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="text-gray-700">Member Since</span>
+                    </div>
+                    <span class="text-gray-600" id="memberSince">Today</span>
+                </div>
+                
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="text-gray-700">Last Login</span>
+                    </div>
+                    <span class="text-gray-600" id="lastLogin">Never</span>
+                </div>
+
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span class="text-gray-700">Industry</span>
+                    </div>
+                    <span class="text-gray-600" id="companyIndustry">N/A</span>
+                </div>
+
+                <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        <span class="text-gray-700">Website</span>
+                    </div>
+                    <a href="#" id="companyWebsite" target="_blank" class="text-green-600 hover:underline">N/A</a>
+                </div>
+
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="text-gray-700">Tax ID / Business Reg. No.</span>
+                    </div>
+                    <span class="text-gray-600" id="companyTaxId">N/A</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white rounded-lg card-shadow p-4 text-center fade-in">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-blue-600" id="totalOrders">0</h3>
+                <p class="text-sm text-gray-600">Total Orders</p>
+            </div>
+            
+            <div class="bg-white rounded-lg card-shadow p-4 text-center fade-in">
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-green-600" id="totalSpent">$0</h3>
+                <p class="text-sm text-gray-600">Total Spent</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Account Settings -->
+    <section class="container mx-auto px-4 py-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Account Settings</h3>
+        
+        <div class="space-y-3">
+            <button id="changePasswordBtn" class="w-full bg-white rounded-lg card-shadow p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4m8 0V9a2 2 0 10-4 0v4.01"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="font-medium text-gray-800">Change Password</h4>
+                        <p class="text-sm text-gray-600">Update your account password</p>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+            
+            <button id="editProfileBtn" class="w-full bg-white rounded-lg card-shadow p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="font-medium text-gray-800">Edit Profile</h4>
+                        <p class="text-sm text-gray-600">Update your company information</p>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+            
+            <button id="orderHistoryBtn" class="w-full bg-white rounded-lg card-shadow p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                    <div class="text-left">
+                        <h4 class="font-medium text-gray-800">Order History</h4>
+                        <p class="text-sm text-gray-600">View all your past orders</p>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- App Settings -->
+    <section class="container mx-auto px-4 py-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">App Settings</h3>
+        
+        <div class="bg-white rounded-lg card-shadow p-4 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="font-medium text-gray-800">Push Notifications</h4>
+                    <p class="text-sm text-gray-600">Get notified about order updates</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" id="notificationsToggle" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                </label>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div>
+                    <h4 class="font-medium text-gray-800">Auto Sync</h4>
+                    <p class="text-sm text-gray-600">Automatically sync data when online</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" class="sr-only peer" id="autoSyncToggle" checked>
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <!-- Change Password Modal -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content w-full max-w-md p-6 m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">Change Password</h2>
+                <button id="closePasswordModal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="passwordChangeForm" class="space-y-4">
+                <div>
+                    <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                    <input 
+                        type="password" 
+                        id="currentPassword" 
+                        name="currentPassword" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div>
+                    <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                    <input 
+                        type="password" 
+                        id="newPassword" 
+                        name="newPassword" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" id="cancelPasswordChange" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content w-full max-w-md p-6 m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">Edit Profile</h2>
+                <button id="closeProfileModal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="profileForm" class="space-y-4">
+                <div>
+                    <label for="companyNameInput" class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                    <input 
+                        type="text" 
+                        id="companyNameInput" 
+                        name="company" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div>
+                    <label for="contactNameInput" class="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
+                    <input 
+                        type="text" 
+                        id="contactNameInput" 
+                        name="contactName" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div>
+                    <label for="phoneInput" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phoneInput" 
+                        name="phone" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div>
+                    <label for="addressInput" class="block text-sm font-medium text-gray-700 mb-2">Business Address</label>
+                    <textarea 
+                        id="addressInput" 
+                        name="address" 
+                        rows="3" 
+                        required 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label for="industryInput" class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                    <input 
+                        type="text" 
+                        id="industryInput" 
+                        name="industry" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+
+                <div>
+                    <label for="websiteInput" class="block text-sm font-medium text-gray-700 mb-2">Website</label>
+                    <input 
+                        type="url" 
+                        id="websiteInput" 
+                        name="website" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+
+                <div>
+                    <label for="taxIdInput" class="block text-sm font-medium text-gray-700 mb-2">Tax ID / Business Reg. No.</label>
+                    <input 
+                        type="text" 
+                        id="taxIdInput" 
+                        name="taxId" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    >
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" id="cancelProfileEdit" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logout Button -->
+    <section class="container mx-auto px-4 py-6">
+        <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+            Sign Out
+        </button>
+    </section>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed nav-bottom bg-white border-t border-gray-200 px-4 py-2">
+        <div class="flex justify-around">
+            <button data-page="dashboard" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="text-xs mt-1">Home</span>
+            </button>
+            
+            <button data-page="products" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <span class="text-xs mt-1">Products</span>
+            </button>
+            
+            <button data-page="orders" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <span class="text-xs mt-1">Orders</span>
+            </button>
+            
+            <button data-page="profile" class="flex flex-col items-center py-2 px-3 text-green-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-xs mt-1">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="db.js"></script>
+    <script src="main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+            initializeModals();
+            
+            // Initialize animations
+            anime({
+                targets: '.fade-in',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 600,
+                delay: anime.stagger(100),
+                easing: 'easeOutQuart'
+            });
+        });
+
+        function loadProfileData() {
+            if (!app.currentUser) return;
+            
+            const user = app.currentUser;
+            
+            // Update profile information
+            document.getElementById('companyName').textContent = user.company || 'Company Name';
+            document.getElementById('userEmail').textContent = user.username;
+            document.getElementById('memberSince').textContent = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Today';
+            document.getElementById('lastLogin').textContent = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never';
+            document.getElementById('companyIndustry').textContent = user.industry || 'N/A';
+            
+            const websiteLink = document.getElementById('companyWebsite');
+            if (user.website) {
+                websiteLink.textContent = user.website;
+                websiteLink.href = user.website.startsWith('http') ? user.website : `http://${user.website}`;
+            } else {
+                websiteLink.textContent = 'N/A';
+                websiteLink.removeAttribute('href');
+            }
+            
+            document.getElementById('companyTaxId').textContent = user.taxId || 'N/A';
+            
+            // Update stats
+            const stats = db.getOrderStats(user.username);
+            document.getElementById('totalOrders').textContent = stats.totalOrders;
+            document.getElementById('totalSpent').textContent = `$${stats.totalValue}`;
+        }
+
+        function initializeModals() {
+            // Change password modal
+            document.getElementById('changePasswordBtn').addEventListener('click', openPasswordModal);
+            document.getElementById('closePasswordModal').addEventListener('click', closePasswordModal);
+            document.getElementById('cancelPasswordChange').addEventListener('click', closePasswordModal);
+            
+            // Edit profile modal
+            document.getElementById('editProfileBtn').addEventListener('click', openProfileModal);
+            document.getElementById('closeProfileModal').addEventListener('click', closeProfileModal);
+            document.getElementById('cancelProfileEdit').addEventListener('click', closeProfileModal);
+            
+            // Form submissions
+            document.getElementById('passwordChangeForm').addEventListener('submit', handlePasswordChange);
+            document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
+            
+            // Other buttons
+            document.getElementById('orderHistoryBtn').addEventListener('click', () => app.navigate('orders'));
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        }
+
+        function openPasswordModal() {
+            document.getElementById('passwordModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            
+            // Clear form
+            document.getElementById('passwordChangeForm').reset();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function openProfileModal() {
+            if (!app.currentUser) return;
+            
+            const user = app.currentUser;
+            
+            // Populate form with current data
+            document.getElementById('companyNameInput').value = user.company || '';
+            document.getElementById('contactNameInput').value = user.contact?.name || '';
+            document.getElementById('phoneInput').value = user.contact?.phone || '';
+            document.getElementById('addressInput').value = user.contact?.address || '';
+            document.getElementById('industryInput').value = user.industry || '';
+            document.getElementById('websiteInput').value = user.website || '';
+            document.getElementById('taxIdInput').value = user.taxId || '';
+            
+            document.getElementById('profileModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function handlePasswordChange(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const currentPassword = formData.get('currentPassword');
+            const newPassword = formData.get('newPassword');
+            const confirmPassword = formData.get('confirmPassword');
+            
+            if (newPassword !== confirmPassword) {
+                app.showErrorMessage('New passwords do not match');
+                return;
+            }
+            
+            if (db.changePassword(app.currentUser.username, currentPassword, newPassword)) {
+                app.showSuccessMessage('Password changed successfully!');
+                closePasswordModal();
+                e.target.reset();
+            } else {
+                app.showErrorMessage('Current password is incorrect');
+            }
+        }
+
+        function handleProfileUpdate(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const updates = {
+                company: formData.get('company'),
+                contact: {
+                    name: formData.get('contactName'),
+                    phone: formData.get('phone'),
+                    address: formData.get('address')
+                },
+                industry: formData.get('industry'),
+                website: formData.get('website'),
+                taxId: formData.get('taxId')
+            };
+            
+            if (db.updateUser(app.currentUser.username, updates)) {
+                // Update current user object
+                app.currentUser = { ...app.currentUser, ...updates };
+                localStorage.setItem('currentUser', JSON.stringify(app.currentUser));
+                
+                app.showSuccessMessage('Profile updated successfully!');
+                closeProfileModal();
+                loadProfileData(); // Refresh display
+            } else {
+                app.showErrorMessage('Failed to update profile');
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                app.logout();
+            }
+        }
+    </script>
+</body>
+</html>

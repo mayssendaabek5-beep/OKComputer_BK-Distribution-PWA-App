@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BK Distribution - Orders</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2D5A27">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, #2D5A27 0%, #4A7C59 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .nav-bottom { bottom: 0; left: 0; right: 0; z-index: 50; }
+        .status-pending { background-color: #FEF3C7; color: #92400E; }
+        .status-processing { background-color: #DBEAFE; color: #1E40AF; }
+        .status-completed { background-color: #D1FAE5; color: #065F46; }
+        .status-invoiced { background-color: #EDE9FE; color: #6B21A8; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 60;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 pb-20">
+    <!-- Header -->
+    <header class="hero-bg text-white sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img src="resources/bk-distribution-logo.png" alt="BK Distribution" class="w-10 h-10 rounded-full bg-white p-1">
+                    <div>
+                        <h1 class="text-lg font-bold">Orders</h1>
+                        <p class="text-xs opacity-90">Manage your orders</p>
+                    </div>
+                </div>
+                <button id="createOrderBtn" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    New Order
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Order Creation Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content w-full max-w-md p-6 m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">Create New Order</h2>
+                <button id="closeOrderModal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="orderForm" class="space-y-4">
+                <div id="orderItems" class="space-y-3">
+                    <!-- Order items will be populated from cart -->
+                </div>
+                
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal:</span>
+                            <span id="orderSubtotal" class="font-medium">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Tax (8%):</span>
+                            <span id="orderTax" class="font-medium">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Shipping:</span>
+                            <span id="orderShipping" class="font-medium">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2">
+                            <span>Total:</span>
+                            <span id="orderTotal" class="text-green-600">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="orderNotes" class="block text-sm font-medium text-gray-700 mb-2">Special Instructions</label>
+                    <textarea 
+                        id="orderNotes" 
+                        name="notes" 
+                        rows="3" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder="Any special instructions for this order..."
+                    ></textarea>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button type="button" id="cancelOrder" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Create Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Status Filter -->
+    <section class="bg-white border-b border-gray-200 sticky top-16 z-30">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <button class="status-filter active bg-green-600 text-white px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-status="">
+                    All Orders
+                </button>
+                <button class="status-filter bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-status="pending">
+                    Pending
+                </button>
+                <button class="status-filter bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-status="processing">
+                    Processing
+                </button>
+                <button class="status-filter bg-gray-200 text-gray-700 hover:bg-gray-300 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" data-status="completed">
+                    Completed
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Orders List -->
+    <section class="container mx-auto px-4 py-6">
+        <div id="ordersContainer" class="space-y-4">
+            <!-- Orders will be populated by JavaScript -->
+        </div>
+        
+        <div id="noOrders" class="hidden text-center py-12">
+            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-500 mb-2">No orders yet</h3>
+            <p class="text-gray-400 mb-4">Create your first order to get started</p>
+            <button id="createFirstOrder" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium">
+                Create Order
+            </button>
+        </div>
+    </section>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal">
+        <div class="modal-content w-full max-w-lg p-6 m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-semibold text-gray-800">Order Details</h2>
+                <button id="closeOrderDetailsModal" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="orderDetailsContent">
+                <!-- Order details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed nav-bottom bg-white border-t border-gray-200 px-4 py-2">
+        <div class="flex justify-around">
+            <button data-page="dashboard" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="text-xs mt-1">Home</span>
+            </button>
+            
+            <button data-page="products" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                </svg>
+                <span class="text-xs mt-1">Products</span>
+            </button>
+            
+            <button data-page="orders" class="flex flex-col items-center py-2 px-3 text-green-600">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2v8h12V6H4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-xs mt-1">Orders</span>
+            </button>
+            
+            <button data-page="profile" class="flex flex-col items-center py-2 px-3 text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span class="text-xs mt-1">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="db.js"></script>
+    <script src="main.js"></script>
+    <script>
+        let currentStatusFilter = '';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+            initializeModals();
+            
+            // Status filter functionality
+            document.querySelectorAll('.status-filter').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active state
+                    document.querySelectorAll('.status-filter').forEach(btn => {
+                        btn.classList.remove('active', 'bg-green-600', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    
+                    this.classList.add('active', 'bg-green-600', 'text-white');
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    
+                    currentStatusFilter = this.dataset.status;
+                    filterOrders();
+                });
+            });
+        });
+
+        function initializeModals() {
+            // Order creation modal
+            document.getElementById('createOrderBtn').addEventListener('click', openOrderModal);
+            document.getElementById('createFirstOrder').addEventListener('click', openOrderModal);
+            document.getElementById('closeOrderModal').addEventListener('click', closeOrderModal);
+            document.getElementById('cancelOrder').addEventListener('click', closeOrderModal);
+            
+            // Order details modal
+            document.getElementById('closeOrderDetailsModal').addEventListener('click', closeOrderDetailsModal);
+            
+            // Form submission
+            document.getElementById('orderForm').addEventListener('submit', handleOrderSubmit);
+        }
+
+        function loadOrders() {
+            if (!app.currentUser) return;
+            
+            const orders = db.getOrdersByUser(app.currentUser.username);
+            displayOrders(orders);
+        }
+
+        function filterOrders() {
+            if (!app.currentUser) return;
+            
+            let orders = db.getOrdersByUser(app.currentUser.username);
+            
+            if (currentStatusFilter) {
+                orders = orders.filter(order => order.status === currentStatusFilter);
+            }
+            
+            displayOrders(orders);
+        }
+
+        function displayOrders(orders) {
+            const container = document.getElementById('ordersContainer');
+            const noOrders = document.getElementById('noOrders');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '';
+                noOrders.classList.remove('hidden');
+                return;
+            }
+            
+            noOrders.classList.add('hidden');
+            
+            // Sort orders by date (newest first)
+            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            container.innerHTML = orders.map(order => `
+                <div class="bg-white rounded-lg card-shadow p-4 fade-in">
+                    <div class="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 class="font-semibold text-gray-800">${order.type} #${order.orderNumber}</h3>
+                            <p class="text-sm text-gray-500">${new Date(order.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <span class="status-${order.status} px-3 py-1 rounded-full text-xs font-medium">
+                            ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p class="text-sm text-gray-600 mb-1">${order.items.length} items</p>
+                        <p class="text-lg font-semibold text-green-600">$${order.totals.total}</p>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <button class="view-order-details flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors" data-order-id="${order.id}">
+                            View Details
+                        </button>
+                        <button class="generate-pdf bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors" data-order-id="${order.id}">
+                            PDF
+                        </button>
+                        <button class="share-whatsapp bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors" data-order-id="${order.id}">
+                            Share
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add event listeners
+            container.querySelectorAll('.view-order-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const orderId = this.dataset.orderId;
+                    showOrderDetails(orderId);
+                });
+            });
+
+            // Animate order cards
+            anime({
+                targets: '.fade-in',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 400,
+                delay: anime.stagger(100),
+                easing: 'easeOutQuart'
+            });
+        }
+
+        function openOrderModal() {
+            const cart = db.getCart();
+            if (cart.length === 0) {
+                app.showErrorMessage('Your cart is empty. Add some products first.');
+                return;
+            }
+            
+            populateOrderModal(cart);
+            document.getElementById('orderModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function populateOrderModal(cart) {
+            const itemsContainer = document.getElementById('orderItems');
+            const totals = db.calculateTotals(cart);
+            
+            itemsContainer.innerHTML = cart.map(item => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-medium text-gray-800">${item.name}</h4>
+                        <p class="text-sm text-gray-600">${item.quantity} × $${item.price}</p>
+                        ${item.notes ? `<p class="text-xs text-gray-500 mt-1">${item.notes}</p>` : ''}
+                    </div>
+                    <span class="font-medium">$${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('orderSubtotal').textContent = `$${totals.subtotal}`;
+            document.getElementById('orderTax').textContent = `$${totals.tax}`;
+            document.getElementById('orderShipping').textContent = `$${totals.shipping}`;
+            document.getElementById('orderTotal').textContent = `$${totals.total}`;
+        }
+
+        function handleOrderSubmit(e) {
+            e.preventDefault();
+            
+            const cart = db.getCart();
+            if (cart.length === 0) {
+                app.showErrorMessage('Your cart is empty');
+                return;
+            }
+            
+            const formData = new FormData(e.target);
+            const orderData = {
+                customerId: app.currentUser.username,
+                type: 'PO',
+                status: 'pending',
+                items: cart,
+                customerInfo: app.currentUser.contact,
+                notes: formData.get('notes') || ''
+            };
+            
+            const order = db.createOrder(orderData);
+            db.clearCart();
+            
+            closeOrderModal();
+            app.showSuccessMessage('Order created successfully!');
+            
+            // Generate PDF and reload orders
+            setTimeout(() => {
+                app.generatePDF(order.id);
+                loadOrders();
+            }, 1000);
+        }
+
+        function showOrderDetails(orderId) {
+            const order = db.getOrder(orderId);
+            if (!order) return;
+            
+            const content = document.getElementById('orderDetailsContent');
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Order Information</h3>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Order Number:</span>
+                                <span class="font-medium">${order.orderNumber}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Type:</span>
+                                <span class="font-medium">${order.type}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Status:</span>
+                                <span class="status-${order.status} px-2 py-1 rounded-full text-xs font-medium">
+                                    ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Date:</span>
+                                <span class="font-medium">${new Date(order.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Items</h3>
+                        <div class="space-y-2">
+                            ${order.items.map(item => `
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="font-medium">${item.name}</span>
+                                        <span class="text-gray-600 text-sm"> (${item.quantity} × $${item.price})</span>
+                                    </div>
+                                    <span class="font-medium">$${(item.price * item.quantity).toFixed(2)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Totals</h3>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Subtotal:</span>
+                                <span class="font-medium">$${order.totals.subtotal}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tax:</span>
+                                <span class="font-medium">$${order.totals.tax}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Shipping:</span>
+                                <span class="font-medium">$${order.totals.shipping}</span>
+                            </div>
+                            <div class="flex justify-between text-lg font-semibold border-t border-gray-200 pt-2">
+                                <span>Total:</span>
+                                <span class="text-green-600">$${order.totals.total}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${order.notes ? `
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Special Instructions</h3>
+                            <p class="text-sm text-gray-600">${order.notes}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="flex gap-2">
+                        <button class="generate-pdf flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium transition-colors" data-order-id="${order.id}">
+                            Download PDF
+                        </button>
+                        <button class="share-whatsapp flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium transition-colors" data-order-id="${order.id}">
+                            Share via WhatsApp
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('orderDetailsModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderDetailsModal() {
+            document.getElementById('orderDetailsModal').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    </script>
+</body>
+</html>
