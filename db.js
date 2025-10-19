@@ -104,7 +104,11 @@ class BKDatabase {
         id: 'user-1',
         username: 'demo@bkcustomer.com',
         password: 'demo123',
+<<<<<<< HEAD
         company: 'BK Distribution',
+=======
+        company: 'Sweet Bakery Co.',
+>>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
         contact: {
           name: 'John Baker',
           phone: '+1 (555) 123-4567',
@@ -143,6 +147,7 @@ class BKDatabase {
     return products.find(p => p.id === id);
   }
 
+<<<<<<< HEAD
   addProduct(product) {
     const products = this.getProducts();
     products.push(product);
@@ -150,6 +155,8 @@ class BKDatabase {
     return true;
   }
 
+=======
+>>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
   searchProducts(query) {
     const products = this.getProducts();
     return products.filter(p => 
@@ -356,4 +363,8 @@ class BKDatabase {
 }
 
 // Initialize database
+<<<<<<< HEAD
 const db = new BKDatabase();
+=======
+const db = new BKDatabase();
+>>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
