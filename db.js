@@ -104,7 +104,7 @@ class BKDatabase {
         id: 'user-1',
         username: 'demo@bkcustomer.com',
         password: 'demo123',
-        company: 'Sweet Bakery Co.',
+        company: 'BK Distribution',
         contact: {
           name: 'John Baker',
           phone: '+1 (555) 123-4567',
@@ -141,6 +141,13 @@ class BKDatabase {
   getProduct(id) {
     const products = this.getProducts();
     return products.find(p => p.id === id);
+  }
+
+  addProduct(product) {
+    const products = this.getProducts();
+    products.push(product);
+    localStorage.setItem('products', JSON.stringify(products));
+    return true;
   }
 
   searchProducts(query) {

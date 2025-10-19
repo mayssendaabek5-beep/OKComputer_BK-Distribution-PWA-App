@@ -153,11 +153,14 @@ class BKApp {
   }
 
   handleLogin(form) {
+    console.log('handleLogin called');
     const formData = new FormData(form);
     const username = formData.get('username');
     const password = formData.get('password');
 
+    console.log('Attempting login for:', username);
     if (db.validateUser(username, password)) {
+      console.log('Login successful for:', username);
       this.currentUser = db.getUser(username);
       localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
       
@@ -166,6 +169,7 @@ class BKApp {
       this.showSuccessMessage('Login successful!');
       setTimeout(() => this.navigate('dashboard'), 1000);
     } else {
+      console.log('Login failed for:', username);
       this.showErrorMessage('Invalid username or password');
     }
   }
@@ -471,5 +475,6 @@ class BKApp {
   }
 }
 
-// Initialize app
+// Initialize app and make it globally accessible
 const app = new BKApp();
+window.app = app;
