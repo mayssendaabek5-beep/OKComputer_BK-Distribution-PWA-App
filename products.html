@@ -169,7 +169,6 @@
     <!-- Cart Overlay -->
     <div id="cartOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
 
-<<<<<<< HEAD
     <!-- Add Product Floating Action Button -->
     <button id="addProductFab" class="fixed bottom-24 right-4 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg z-40 transition-all duration-200 transform hover:scale-105">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,8 +236,6 @@
         </div>
     </div>
 
-=======
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
     <!-- Bottom Navigation -->
     <nav class="fixed nav-bottom bg-white border-t border-gray-200 px-4 py-2">
         <div class="flex justify-around">
@@ -311,7 +308,6 @@
             document.getElementById('closeCart').addEventListener('click', closeCart);
             document.getElementById('cartOverlay').addEventListener('click', closeCart);
             document.getElementById('createOrderBtn').addEventListener('click', createOrder);
-<<<<<<< HEAD
 
             // Add Product functionality
             document.getElementById('addProductFab').addEventListener('click', openAddProductModal);
@@ -356,10 +352,6 @@
             loadProducts(); // Refresh the product list
         }
 
-=======
-        });
-
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
         function loadProducts() {
             const products = db.getProducts();
             displayProducts(products);
@@ -517,8 +509,4 @@
         });
     </script>
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
