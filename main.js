@@ -153,21 +153,11 @@ class BKApp {
   }
 
   handleLogin(form) {
-<<<<<<< HEAD
-    console.log('handleLogin called');
-=======
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
     const formData = new FormData(form);
     const username = formData.get('username');
     const password = formData.get('password');
 
-<<<<<<< HEAD
-    console.log('Attempting login for:', username);
     if (db.validateUser(username, password)) {
-      console.log('Login successful for:', username);
-=======
-    if (db.validateUser(username, password)) {
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
       this.currentUser = db.getUser(username);
       localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
       
@@ -176,10 +166,6 @@ class BKApp {
       this.showSuccessMessage('Login successful!');
       setTimeout(() => this.navigate('dashboard'), 1000);
     } else {
-<<<<<<< HEAD
-      console.log('Login failed for:', username);
-=======
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
       this.showErrorMessage('Invalid username or password');
     }
   }
@@ -485,11 +471,6 @@ class BKApp {
   }
 }
 
-<<<<<<< HEAD
 // Initialize app and make it globally accessible
 const app = new BKApp();
 window.app = app;
-=======
-// Initialize app
-const app = new BKApp();
->>>>>>> 63d4c3fda3a9938500d449a7ea0861a65e2a4886
